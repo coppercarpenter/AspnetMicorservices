@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 namespace Ordering.Application.Features.Orders.Commands.UpdateOrder
 {
 
-    public class UpdateOrderCommendHandler : IRequestHandler<UpdateOrderCommand>
+    public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand>
     {
         public readonly IOrderRepository _order;
         public readonly IMapper _mapper;
-        public readonly ILogger<UpdateOrderCommendHandler> _logger;
+        public readonly ILogger<UpdateOrderCommandHandler> _logger;
 
-        public UpdateOrderCommendHandler(IOrderRepository order, IMapper mapper, ILogger<UpdateOrderCommendHandler> logger)
+        public UpdateOrderCommandHandler(IOrderRepository order, IMapper mapper, ILogger<UpdateOrderCommandHandler> logger)
         {
             _order = order;
             _mapper = mapper;

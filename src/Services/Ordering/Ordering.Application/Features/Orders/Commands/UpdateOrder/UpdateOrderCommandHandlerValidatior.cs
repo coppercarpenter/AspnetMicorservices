@@ -2,9 +2,9 @@
 
 namespace Ordering.Application.Features.Orders.Commands.UpdateOrder
 {
-    public class UpdateOrderCommendHandlerValidatior : AbstractValidator<UpdateOrderCommand>
+    public class UpdateOrderCommandHandlerValidatior : AbstractValidator<UpdateOrderCommand>
     {
-        public UpdateOrderCommendHandlerValidatior()
+        public UpdateOrderCommandHandlerValidatior()
         {
             RuleFor(r => r.UserName)
                .NotEmpty().WithMessage("{UserName} is required")
