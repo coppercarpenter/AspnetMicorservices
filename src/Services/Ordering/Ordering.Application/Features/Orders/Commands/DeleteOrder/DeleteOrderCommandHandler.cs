@@ -7,22 +7,23 @@ using Ordering.Domain.Entities;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ordering.Application.Features.Orders.Commands.UpdateOrder
+namespace Ordering.Application.Features.Orders.Commands.DeleteOrder
 {
-
-    public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand>
+    public class DeleteOrderCommandHandler : IRequestHandler<DeleteOrderCommand>
     {
         public readonly IOrderRepository _order;
         public readonly IMapper _mapper;
-        public readonly ILogger<UpdateOrderCommandHandler> _logger;
+        public readonly ILogger<DeleteOrderCommandHandler> _logger;
 
-        public UpdateOrderCommandHandler(IOrderRepository order, IMapper mapper, ILogger<UpdateOrderCommandHandler> logger)
+
+        public DeleteOrderCommandHandler(IOrderRepository order, IMapper mapper, ILogger<DeleteOrderCommandHandler> logger)
         {
             _order = order;
             _mapper = mapper;
             _logger = logger;
         }
-        public async Task<Unit> Handle(UpdateOrderCommand request, CancellationToken cancellationToken)
+
+        public async Task<Unit> Handle(DeleteOrderCommand request, CancellationToken cancellationToken)
         {
             var order = await _order.GetByIdAsync(request.Id);
             if (order == null)
@@ -31,13 +32,11 @@ namespace Ordering.Application.Features.Orders.Commands.UpdateOrder
                 throw new NotFoundException(nameof(Order), request.Id);
             }
 
-            _mapper.Map(request, order, typeof(UpdateOrderCommand), typeof(Order));
-            await _order.UpdateAsync(order);
+            await _order.DeleteAsync(order);
 
-            _logger.LogInformation($"Order {order.Id} is successfully updated");
+            _logger.LogInformation($"Order {order.Id} is successfully deleted");
 
             return Unit.Value;
-
         }
     }
 }

@@ -19,14 +19,14 @@ namespace Ordering.Application.Features.Orders.Commands.CheckOutOrder
     {
         public readonly IOrderRepository _order;
         public readonly IMapper _mapper;
-        public readonly IEmailService _email;
+        //public readonly IEmailService _email;
         public readonly ILogger<CheckOutOrderCommandHandler> _logger;
 
-        public CheckOutOrderCommandHandler(IOrderRepository order, IMapper mapper, IEmailService email, ILogger<CheckOutOrderCommandHandler> logger)
+        public CheckOutOrderCommandHandler(IOrderRepository order, IMapper mapper,  ILogger<CheckOutOrderCommandHandler> logger)
         {
             _order = order;
             _mapper = mapper;
-            _email = email;
+            //_email = email;
             _logger = logger;
         }
 
@@ -37,23 +37,23 @@ namespace Ordering.Application.Features.Orders.Commands.CheckOutOrder
 
             _logger.LogInformation($"Order {newOrder.Id} is successfully Created");
 
-            await SendMail(newOrder);
+            //await SendMail(newOrder);
 
             return newOrder.Id;
         }
 
-        private async Task SendMail(Order order)
-        {
-            var email = new Email() { To = "sheheryar.sajid921@gmail.com", Body = $"Order was created.", Subject = "Order was created" };
+        //private async Task SendMail(Order order)
+        //{
+        //    var email = new Email() { To = "sheheryar.sajid921@gmail.com", Body = $"Order was created.", Subject = "Order was created" };
 
-            try
-            {
-                await _email.SendEmail(email);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Order {order.Id} failed due to an error with the mail service: {ex.Message}");
-            }
-        }
+        //    try
+        //    {
+        //        await _email.SendEmail(email);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Order {order.Id} failed due to an error with the mail service: {ex.Message}");
+        //    }
+        //}
     }
 }
