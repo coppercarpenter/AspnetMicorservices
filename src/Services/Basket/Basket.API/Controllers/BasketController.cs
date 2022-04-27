@@ -1,6 +1,9 @@
-﻿using Basket.API.Entities;
+﻿using AutoMapper;
+using Basket.API.Entities;
 using Basket.API.GrpcServices;
 using Basket.API.Repositories;
+using EventBus.Message.Events;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Threading.Tasks;
@@ -14,15 +17,19 @@ namespace Basket.API.Controllers
         #region Private Fields
 
         private readonly IBasketRepository _repo;
+        private readonly  IMapper _mapper;
+        private readonly  IPublishEndpoint _publishEndpoint;
         private readonly DiscountGrpcService _grpc;
 
         #endregion Private Fields
 
         #region Constructor
 
-        public BasketController(IBasketRepository repo, DiscountGrpcService grpc)
+        public BasketController(IBasketRepository repo, DiscountGrpcService grpc, IMapper mapper, IPublishEndpoint publishEndpoint)
         {
             _repo = repo;
+            _publishEndpoint = publishEndpoint;
+            _mapper = mapper;
             _grpc = grpc;
         }
 
@@ -43,10 +50,29 @@ namespace Basket.API.Controllers
                 var coupon = await _grpc.GetDiscount(item.ProductName);
                 item.Price -= coupon.Amount;
             }
-            var res = await _repo.UpdateBasket(basket);
-            return Ok(res);
+            return Ok(await _repo.UpdateBasket(basket));
         }
 
+
+        [HttpPost("[action]")]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> Checkout([FromBody] BasketCheckOut model)
+        {
+            var basket = await _repo.GetBasket(model.UserName);
+            if (basket == null)
+                return BadRequest();
+
+
+            var message = _mapper.Map<BasketCheckOutEvent>(model);
+            message.TotalPrice = basket.TotalPrice;
+
+            await _publishEndpoint.Publish(message);
+
+            await _repo.DeleteBasket(model.UserName);
+
+            return Ok();
+        }
         #endregion POST
 
         #region GET
